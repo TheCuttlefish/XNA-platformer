@@ -32,6 +32,7 @@ namespace Platformer
         // The layer which entities are drawn on top of.
         private const int EntityLayer = 2;
 
+        public Loader myLoader;
         // Entities in the level.
         public Player Player
         {
@@ -92,6 +93,10 @@ namespace Platformer
         /// </param>
         public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
         {
+
+            //initialising
+            myLoader = new Loader(fileStream);
+            //myLoader.Assess();
             // Create a new content manager to load content used just by this level.
             content = new ContentManager(serviceProvider, "Content");
 
@@ -126,18 +131,11 @@ namespace Platformer
             // Load the level and ensure all of the lines are the same length.
             int width;
             List<string> lines = new List<string>();
-            using (StreamReader reader = new StreamReader(fileStream))
-            {
-                string line = reader.ReadLine();
-                width = line.Length;
-                while (line != null)
-                {
-                    lines.Add(line);
-                    if (line.Length != width)
-                        throw new Exception(String.Format("The length of line {0} is different from all preceeding lines.", lines.Count));
-                    line = reader.ReadLine();
-                }
-            }
+
+            lines = myLoader.CreateLines();
+
+            //StreamReader code removed here
+            width = lines[0].Length;
 
             // Allocate the tile grid.
             tiles = new Tile[width, lines.Count];
